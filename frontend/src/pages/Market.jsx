@@ -49,11 +49,11 @@ export default function Market() {
             index,
             name,
           };
-        }),
+        })
       );
 
       const filtered = formatted.filter(
-        (nft) => nft.tokenId && nft.price && nft.price > 0n,
+        (nft) => nft.tokenId && nft.price && nft.price > 0n
       );
 
       setAllNfts(filtered);
@@ -86,28 +86,25 @@ export default function Market() {
 
   /* ---------------- SEARCH ---------------- */
   const filteredNFTs = allNfts.filter((nft) =>
-    nft.name.toLowerCase().includes(search.toLowerCase()),
+    nft.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const marqueeNFTs =
-    filteredNFTs.length > 0 ? [...filteredNFTs, ...filteredNFTs] : [];
-
-  /* ---------------- START MARQUEE ---------------- */
+  /* ---------------- MARQUEE ANIMATION ---------------- */
   useEffect(() => {
-    if (marqueeNFTs.length === 0) return;
+    if (filteredNFTs.length === 0) return;
 
     marqueeControls.start({
-      x: ["0%", "-50%"],
+      x: ["100%", "-100%"],
       transition: {
         x: {
           repeat: Infinity,
           repeatType: "loop",
-          duration: 35,
+          duration: filteredNFTs.length * 6,
           ease: "linear",
         },
       },
     });
-  }, [marqueeNFTs, marqueeControls]);
+  }, [filteredNFTs, marqueeControls]);
 
   if (loading) {
     return (
@@ -124,7 +121,9 @@ export default function Market() {
       exit="exit"
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <h1 className="text-2xl font-bold mb-6 text-red-700">NFT Marketplace</h1>
+      <h1 className="text-2xl font-bold mb-6 text-red-700">
+        NFT Marketplace
+      </h1>
 
       {/* 🔍 SEARCH */}
       <div className="max-w-md w-full px-2 mb-10 relative mt-4">
@@ -133,7 +132,12 @@ export default function Market() {
           placeholder="Search NFT by name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800 text-white border border-slate-600 focus:ring-2 focus:ring-indigo-500"
+          className="
+            w-full pl-10 pr-4 py-2 rounded-lg
+            bg-slate-800 text-white
+            border border-slate-600
+            focus:ring-2 focus:ring-indigo-500
+          "
         />
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
           🔍
@@ -149,22 +153,25 @@ export default function Market() {
             onHoverStart={() => marqueeControls.stop()}
             onHoverEnd={() =>
               marqueeControls.start({
-                x: ["0%", "-50%"],
+                x: ["100%", "-100%"],
                 transition: {
                   x: {
                     repeat: Infinity,
                     repeatType: "loop",
-                    duration: 35,
+                    duration: filteredNFTs.length * 6,
                     ease: "linear",
                   },
                 },
               })
             }
           >
-            {marqueeNFTs.map((nft, i) => (
+            {filteredNFTs.map((nft) => (
               <div
-                key={`${nft.tokenId}-${i}`}
-                className="min-w-[160px] sm:min-w-[200px] md:min-w-[220px] transition-transform duration-300 hover:scale-105"
+                key={nft.tokenId}
+                className="
+                  min-w-[160px] sm:min-w-[200px] md:min-w-[220px]
+                  transition-transform duration-300 hover:scale-105
+                "
               >
                 <NFTCard nft={nft} reload={loadMarketplaceNFTs} />
               </div>
@@ -184,19 +191,19 @@ export default function Market() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
           className="
-      relative overflow-hidden
-      px-8 py-3 rounded-xl
-      font-bold text-white text-lg
-      bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600
-      shadow-[0_0_25px_rgba(99,102,241,0.6)]
-    "
+            relative overflow-hidden
+            px-8 py-3 rounded-xl
+            font-bold text-white text-lg
+            bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600
+            shadow-[0_0_25px_rgba(99,102,241,0.6)]
+          "
         >
-          {/* ✨ SHINE OVERLAY */}
+          {/* ✨ SHINE */}
           <motion.span
             className="
-        absolute inset-0
-        bg-gradient-to-r from-transparent via-white/40 to-transparent
-      "
+              absolute inset-0
+              bg-gradient-to-r from-transparent via-white/40 to-transparent
+            "
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
             transition={{
@@ -206,12 +213,12 @@ export default function Market() {
             }}
           />
 
-          {/* 💡 GLOW PULSE */}
+          {/* 💡 GLOW */}
           <motion.span
             className="
-        absolute inset-0 rounded-xl
-        shadow-[0_0_35px_rgba(139,92,246,0.9)]
-      "
+              absolute inset-0 rounded-xl
+              shadow-[0_0_35px_rgba(139,92,246,0.9)]
+            "
             animate={{ opacity: [0.2, 0.6, 0.2] }}
             transition={{
               duration: 2,
@@ -220,7 +227,6 @@ export default function Market() {
             }}
           />
 
-          {/* BUTTON TEXT */}
           <span className="relative z-10">
             {showHistory ? "Hide Sold History" : "Sold History"}
           </span>
@@ -229,16 +235,21 @@ export default function Market() {
 
       {/* 🧾 SOLD HISTORY */}
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out w-full max-w-6xl ${
-          showHistory ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`
+          overflow-hidden transition-all duration-300 ease-in-out
+          w-full max-w-6xl
+          ${showHistory ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}
+        `}
       >
         {showHistory && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             {sales.map((s, i) => (
               <div
                 key={i}
-                className="bg-slate-900 p-4 rounded-xl border border-slate-700 relative"
+                className="
+                  bg-slate-900 p-4 rounded-xl
+                  border border-slate-700 relative
+                "
               >
                 <div className="absolute top-2 right-2 bg-yellow-600 text-white text-xs font-bold px-2 py-1 rounded">
                   SOLD
@@ -248,9 +259,10 @@ export default function Market() {
                   NFT #{s.tokenId}
                 </p>
 
-                <p className="text-lg">{ethers.formatEther(s.price)} ETH</p>
+                <p className="text-lg">
+                  {ethers.formatEther(s.price)} ETH
+                </p>
 
-                {/* ✅ BUYER ADDRESS */}
                 <p className="text-xs text-gray-400 mt-1">
                   Buyer:{" "}
                   <span className="text-indigo-300 font-mono">
