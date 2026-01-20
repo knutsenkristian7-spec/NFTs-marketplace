@@ -69,7 +69,7 @@ export default function MyNFTs() {
 
   return (
     <motion.div
-      className="min-h-[calc(100vh-80px)] flex justify-center"
+      className="min-h-[calc(100vh-80px)] flex flex-1 justify-center"
       variants={pageVariants}
       initial="initial"
       animate="animate"
@@ -90,7 +90,7 @@ export default function MyNFTs() {
         grid grid-cols-1
         sm:grid-cols-2
         md:grid-cols-3
-        lg:grid-cols-4
+        lg:grid-cols-5
         xl:grid-cols-5
         gap-6
         justify-center
