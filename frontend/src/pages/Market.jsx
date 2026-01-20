@@ -85,10 +85,10 @@ export default function Market() {
     nft.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  /* ---------------- START MARQUEE (CONTINUOUS) ---------------- */
-  const startMarquee = () => {
+  /* ---------------- MARQUEE CONTROL ---------------- */
+  const startMarquee = (direction = "left") => {
     marqueeControls.start({
-      x: "-100%",
+      x: direction === "left" ? "-100%" : "0%",
       transition: {
         duration: filteredNFTs.length * 6,
         ease: "linear",
@@ -99,7 +99,7 @@ export default function Market() {
 
   useEffect(() => {
     if (filteredNFTs.length > 0) {
-      startMarquee()
+      startMarquee("left")
     }
   }, [filteredNFTs])
 
@@ -133,19 +133,31 @@ export default function Market() {
         </span>
       </div>
 
-      {/* 🖼 NFT MARQUEE */}
-      <div className="relative w-full max-w-6xl overflow-hidden">
+      {/* 🖼 NFT MARQUEE (DRAGGABLE) */}
+      <div className="relative w-full max-w-6xl overflow-hidden cursor-grab">
         {filteredNFTs.length > 0 ? (
           <motion.div
             className="flex gap-6 w-max"
             animate={marqueeControls}
+            drag="x"
+            dragConstraints={{ left: -100000, right: 100000 }}
+            dragElastic={0.05}
+            onHoverStart={() => marqueeControls.stop()}
+            onHoverEnd={() => startMarquee("left")}
+            onDragStart={() => marqueeControls.stop()}
+            onDragEnd={(e, info) => {
+              // 👉 determine direction from drag velocity
+              if (info.velocity.x > 0) {
+                startMarquee("right")
+              } else {
+                startMarquee("left")
+              }
+            }}
           >
             {filteredNFTs.map(nft => (
               <div
                 key={nft.tokenId}
                 className="min-w-[160px] sm:min-w-[200px] md:min-w-[220px]"
-                onMouseEnter={() => marqueeControls.stop()}
-                onMouseLeave={startMarquee} // ✅ CONTINUES, NOT RESTARTS
               >
                 <NFTCard nft={nft} reload={loadMarketplaceNFTs} />
               </div>
@@ -156,9 +168,21 @@ export default function Market() {
         )}
       </div>
 
+      {/* 🧾 SOLD HISTORY BUTTON */}
+      <div className="flex justify-center mt-12 mb-6">
+        <motion.button
+          onClick={() => setShowHistory(!showHistory)}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-8 py-3 rounded-xl font-bold text-white text-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600"
+        >
+          {showHistory ? "Hide Sold History" : "Sold History"}
+        </motion.button>
+      </div>
+
       {/* 🧾 SOLD HISTORY */}
       {showHistory && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mt-6">
           {sales.map((s, i) => (
             <div
               key={i}
@@ -168,6 +192,9 @@ export default function Market() {
                 NFT #{s.tokenId}
               </p>
               <p>{ethers.formatEther(s.price)} ETH</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {new Date(s.time * 1000).toLocaleString()}
+              </p>
             </div>
           ))}
         </div>
