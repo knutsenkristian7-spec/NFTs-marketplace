@@ -15,10 +15,10 @@ export default function Navbar({ account, connectWallet, disconnectWallet }) {
           </h1>
 
           {/* DESKTOP LINKS */}
-          <div className="hidden md:flex gap-10 font-bold text-lg md:text-xl">
-            <Link to="/" className="hover:text-indigo-400">Market</Link>
-            <Link to="/create" className="hover:text-indigo-400">Create</Link>
-            <Link to="/my-nfts" className="hover:text-indigo-400">My NFTs</Link>
+          <div className="hidden md:flex gap-10 font-bold text-lg md:text-xl text-blue-500">
+            <Link to="/" className="hover:text-yellow-700">Market</Link>
+            <Link to="/create" className="hover:text-green-700">Create</Link>
+            <Link to="/my-nfts" className="hover:text-red-600">My NFTs</Link>
           </div>
 
           {/* DESKTOP WALLET */}
