@@ -2,8 +2,9 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { ethers } from "ethers"
-import { getMarketplaceContract, getNFTContract } from "../web3"
 import { motion } from "framer-motion"
+
+import { getMarketplaceContract, getNFTContract } from "../web3"
 
 export default function NFTCard({ nft, reload }) {
   const navigate = useNavigate()
@@ -68,7 +69,7 @@ export default function NFTCard({ nft, reload }) {
 
   if (!meta) {
     return (
-      <div className="bg-slate-800 rounded-lg p-4 w-[220px] h-[420px]" />
+      <div className="bg-slate-800 rounded-xl w-[220px] h-[420px]" />
     )
   }
 
@@ -76,9 +77,9 @@ export default function NFTCard({ nft, reload }) {
 
   return (
     <motion.div
+      className="relative group"
       whileHover={{ scale: 1.06 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="relative group"
     >
       {/* 🌈 SHINY ANIMATED BORDER */}
       <motion.div
@@ -96,88 +97,90 @@ export default function NFTCard({ nft, reload }) {
           repeat: Infinity,
           ease: "linear",
         }}
-        style={{
-          backgroundSize: "300% 300%",
-        }}
+        style={{ backgroundSize: "300% 300%" }}
       />
 
-      {/* 🧊 CARD CONTENT */}
-      <div className="relative z-10 bg-slate-800 rounded-2xl shadow-lg w-[220px] h-[420px] flex flex-col border border-slate-700 overflow-hidden">
+      {/* 🧊 CARD */}
+      <div className="relative z-10 bg-slate-800 rounded-2xl w-[220px] h-[420px] overflow-hidden border border-slate-700">
 
         {/* IMAGE */}
-        <div className="p-3">
-          <div
-            onClick={() =>
-              navigate(`/nft/${nft.nftAddress}/${nft.tokenId}`)
-            }
-            className="cursor-pointer"
-          >
-            <img
-              src={meta.image}
-              className="rounded-md h-40 w-full object-cover"
-              alt={meta.name}
-            />
-          </div>
-        </div>
+        <img
+          src={meta.image}
+          alt={meta.name}
+          className="h-full w-full object-cover cursor-pointer"
+          onClick={() =>
+            navigate(`/nft/${nft.nftAddress}/${nft.tokenId}`)
+          }
+        />
 
-        {/* INFO */}
-        <div className="px-3 text-sm flex-1">
+        {/* 🌑 OVERLAY */}
+        <motion.div
+          className="
+            absolute inset-0
+            bg-gradient-to-t from-black via-black/80 to-transparent
+          "
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 0.9 }}
+          transition={{ duration: 0.4 }}
+        />
+
+        {/* 📄 INFO (HIDDEN → SHOW ON HOVER) */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 p-4 z-10 text-white"
+          initial={{ opacity: 0, y: 40 }}
+          whileHover={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+        >
           <h3 className="text-indigo-400 font-semibold truncate">
             NFT #{nft.tokenId} {meta.name}
           </h3>
 
-          <p className="text-xs text-gray-400 line-clamp-2 mt-1">
+          <p className="text-xs text-gray-300 line-clamp-2 mt-1">
             {meta.description}
           </p>
 
-          <p className="mt-2 font-medium text-white">
+          <p className="mt-2 font-semibold">
             {ethers.formatEther(price)} ETH
           </p>
-        </div>
 
-        {/* ACTIONS */}
-        <div className="p-3 h-[120px]">
-          {isOwner ? (
-            <>
-              <input
-                type="text"
-                placeholder="New price (ETH)"
-                value={newPrice}
-                onChange={(e) => setNewPrice(e.target.value)}
-                className="w-full p-1.5 text-sm rounded bg-slate-700"
-              />
+          <div className="mt-3">
+            {isOwner ? (
+              <>
+                <input
+                  type="text"
+                  placeholder="New price (ETH)"
+                  value={newPrice}
+                  onChange={(e) => setNewPrice(e.target.value)}
+                  className="w-full p-1.5 text-sm rounded bg-slate-700"
+                />
 
-              <button
-                onClick={updatePrice}
-                className="btn ripple mt-2 w-full bg-green-600 py-1.5 text-sm rounded"
-              >
-                Change Price
-              </button>
+                <button
+                  onClick={updatePrice}
+                  className="mt-2 w-full bg-green-600 py-1.5 rounded text-sm"
+                >
+                  Change Price
+                </button>
 
-              <button
-                onClick={cancel}
-                className="btn ripple mt-2 w-full bg-red-600 py-1.5 text-sm rounded"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <>
-              {/* spacer keeps height */}
-              <div className="h-[56px]" />
-
+                <button
+                  onClick={cancel}
+                  className="mt-2 w-full bg-red-600 py-1.5 rounded text-sm"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
               <button
                 onClick={buy}
                 className="
-                  btn ripple w-full bg-indigo-600 py-1.5 text-sm rounded
+                  w-full bg-indigo-600 py-1.5 rounded text-sm
                   hover:shadow-[0_0_20px_rgba(99,102,241,0.9)]
                 "
               >
                 Buy
               </button>
-            </>
-          )}
-        </div>
+            )}
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   )
