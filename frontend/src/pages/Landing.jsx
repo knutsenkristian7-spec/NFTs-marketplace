@@ -75,7 +75,7 @@ export default function Landing({ account, connectWallet }) {
               px-8 py-3 rounded-xl font-bold text-lg transition
               ${
                 account
-                  ? "border border-indigo-500 text-indigo-300 hover:bg-indigo-600 hover:text-white"
+                  ? "border border-indigo-400 text-indigo-300 hover:bg-indigo-600 hover:text-white"
                   : "border border-gray-600 text-gray-500 cursor-not-allowed"
               }
             `}
@@ -85,12 +85,7 @@ export default function Landing({ account, connectWallet }) {
         </div>
 
         {/* MARKET */}
-        <button
-          onClick={() => navigate("/market")}
-          className="mt-10 text-indigo-400 underline hover:text-indigo-300"
-        >
-          Explore Market →
-        </button>
+        
       </motion.div>
     </div>
   )
