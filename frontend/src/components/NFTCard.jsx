@@ -126,16 +126,16 @@ export default function NFTCard({ nft, reload }) {
 
         {/* 📄 INFO (HIDDEN → SHOW ON HOVER) */}
         <motion.div
-          className="absolute bottom-0 left-0 right-0 p-4 z-10 text-white"
+          className="absolute bottom-0 left-0 right-0 p-4 z-10 text-black"
           initial={{ opacity: 0, y: 40 }}
           whileHover={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
-          <h3 className="text-indigo-400 font-semibold truncate">
+          <h3 className="text-black font-semibold truncate">
             NFT #{nft.tokenId} {meta.name}
           </h3>
 
-          <p className="text-xs text-gray-300 line-clamp-2 mt-1">
+          <p className="text-xs text-black line-clamp-2 mt-1">
             {meta.description}
           </p>
 

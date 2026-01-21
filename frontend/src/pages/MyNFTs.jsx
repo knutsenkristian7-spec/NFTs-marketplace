@@ -12,6 +12,30 @@ const pageVariants = {
   exit: { opacity: 0, y: -30 },
 }
 
+/* ---------------- CARD VARIANTS ---------------- */
+const cardVariants = {
+  rest: {},
+  hover: {},
+}
+
+/* ---------------- INFO VARIANTS ---------------- */
+const infoVariants = {
+  rest: {
+    opacity: 0,
+    y: 25,
+    pointerEvents: "none",
+  },
+  hover: {
+    opacity: 1,
+    y: 0,
+    pointerEvents: "auto",
+    transition: {
+      duration: 0.45,
+      ease: "easeOut",
+    },
+  },
+}
+
 export default function MyNFTs() {
   const [items, setItems] = useState([])
   const [price, setPrice] = useState({})
@@ -38,9 +62,7 @@ export default function MyNFTs() {
             ...meta.data,
           })
         }
-      } catch {
-        continue
-      }
+      } catch {}
     }
 
     setItems(results)
@@ -52,11 +74,10 @@ export default function MyNFTs() {
     const marketplace = await getMarketplaceContract(true)
 
     await nft.approve(MARKETPLACE_ADDRESS, tokenId)
-
     await marketplace.listItem(
       NFT_ADDRESS,
       tokenId,
-      ethers.parseEther(price[tokenId]),
+      ethers.parseEther(price[tokenId])
     )
 
     alert("NFT listed!")
@@ -69,124 +90,118 @@ export default function MyNFTs() {
 
   return (
     <motion.div
-      className="min-h-[calc(100vh-80px)] flex flex-1 justify-center"
+      className="min-h-[calc(100vh-80px)] flex justify-center"
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      {/* CENTERED CONTENT */}
       <div className="w-full max-w-7xl px-6 py-10 flex flex-col items-center">
-        {/* TITLE */}
-        <h1 className="text-2xl text-white mb-10 font-bold text-center">
+
+        {/* ✨ SHINY TITLE */}
+        <motion.h1
+          className="
+            mb-12 text-4xl font-extrabold text-center
+            bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
+            bg-[length:300%_300%] bg-clip-text text-transparent
+          "
+          animate={{
+            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+        >
           My NFTs
-        </h1>
+        </motion.h1>
 
         {/* 🖼 NFT GRID */}
-        <div className="w-full flex justify-center">
-          <div
-            className="
-              grid grid-cols-1
-              sm:grid-cols-2
-              md:grid-cols-3
-              lg:grid-cols-4
-              xl:grid-cols-5
-              gap-8
-              justify-center
-            "
-          >
-            {items.length > 0 ? (
-              items.map((nft) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+          {items.length > 0 ? (
+            items.map((nft) => (
+              <motion.div
+                key={nft.id}
+                variants={cardVariants}
+                initial="rest"
+                whileHover="hover"
+                animate="rest"
+                className="relative"
+              >
+                {/* 🌈 SHINY BORDER */}
                 <motion.div
-                  key={nft.id}
+                  className="
+                    absolute inset-0 rounded-2xl
+                    bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+                    blur-sm opacity-70
+                  "
+                  animate={{
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                  }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                  style={{ backgroundSize: "300% 300%" }}
+                />
+
+                {/* 🧊 CARD */}
+                <motion.div
                   whileHover={{ scale: 1.06 }}
                   transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                  className="relative group"
+                  className="
+                    relative z-10
+                    bg-slate-800 rounded-2xl
+                    w-[220px] h-[360px]
+                    border border-slate-700
+                    overflow-hidden
+                  "
                 >
-                  {/* 🌈 SHINY BORDER */}
-                  <motion.div
-                    className="
-                      absolute inset-0 rounded-2xl
-                      bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
-                      opacity-70 blur-sm
-                      group-hover:opacity-100
-                    "
-                    animate={{
-                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                    }}
-                    transition={{
-                      duration: 6,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    style={{
-                      backgroundSize: "300% 300%",
-                    }}
+                  {/* IMAGE */}
+                  <img
+                    src={nft.image}
+                    alt={nft.name}
+                    className="h-full w-full object-cover"
                   />
 
-                  {/* 🧊 CARD */}
-                  <div
+                  {/* 🔥 INFO OVERLAY */}
+                  <motion.div
+                    variants={infoVariants}
                     className="
-                      relative z-10
-                      bg-slate-800 rounded-2xl
-                      w-[220px] h-[360px]
-                      flex flex-col
-                      border border-slate-700
-                      overflow-hidden
+                      absolute inset-0
+                      bg-black/75 backdrop-blur-md
+                      p-4 flex flex-col justify-end text-center
                     "
                   >
-                    {/* IMAGE */}
-                    <img
-                      src={nft.image}
-                      alt={nft.name}
-                      className="rounded-t-2xl h-36 w-full object-cover"
+                    <h3 className="text-indigo-400 font-semibold text-sm truncate">
+                      {nft.name}
+                    </h3>
+
+                    <p className="text-xs text-gray-300 mt-1 line-clamp-2">
+                      {nft.description}
+                    </p>
+
+                    <input
+                      placeholder="Price (ETH)"
+                      className="w-full mt-3 p-1.5 bg-slate-700 rounded text-sm text-center"
+                      onChange={(e) =>
+                        setPrice({ ...price, [nft.id]: e.target.value })
+                      }
                     />
 
-                    {/* CONTENT */}
-                    <div className="p-3 flex flex-col flex-1 text-center">
-                      <h3 className="text-sm text-indigo-400 font-semibold truncate">
-                        {nft.name}
-                      </h3>
-
-                      <p className="text-xs text-gray-400 mt-1 line-clamp-2 h-[32px]">
-                        {nft.description}
-                      </p>
-
-                      <div className="mt-auto">
-                        <input
-                          placeholder="Price (ETH)"
-                          className="
-                            w-full p-1.5 mt-2
-                            bg-slate-700 rounded text-sm
-                            text-center
-                          "
-                          onChange={(e) =>
-                            setPrice({ ...price, [nft.id]: e.target.value })
-                          }
-                        />
-
-                        <button
-                          onClick={() => listNFT(nft.id)}
-                          className="
-                            btn ripple w-full mt-2
-                            bg-yellow-600 py-1.5 rounded text-sm
-                            hover:shadow-[0_0_20px_rgba(234,179,8,0.9)]
-                          "
-                        >
-                          List
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                    <button
+                      onClick={() => listNFT(nft.id)}
+                      className="
+                        btn ripple w-full mt-2
+                        bg-yellow-600 py-1.5 rounded text-sm
+                        hover:shadow-[0_0_20px_rgba(234,179,8,0.9)]
+                      "
+                    >
+                      List
+                    </button>
+                  </motion.div>
                 </motion.div>
-              ))
-            ) : (
-              <p className="text-gray-400 text-center col-span-full">
-                You don’t own any NFTs yet
-              </p>
-            )}
-          </div>
+              </motion.div>
+            ))
+          ) : (
+            <p className="text-gray-400 col-span-full text-center">
+              You don’t own any NFTs yet
+            </p>
+          )}
         </div>
       </div>
     </motion.div>
