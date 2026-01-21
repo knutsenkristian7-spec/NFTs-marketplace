@@ -51,7 +51,7 @@ export default function Market() {
       )
 
       setAllNfts(
-        formatted.filter(nft => nft.tokenId && nft.price && nft.price > 0n)
+        formatted.filter(nft => nft.price && nft.price > 0n)
       )
     } catch (err) {
       console.error("Marketplace load error:", err)
@@ -80,15 +80,19 @@ export default function Market() {
     loadSales()
   }, [])
 
-  /* ---------------- SEARCH ---------------- */
-  const filteredNFTs = allNfts.filter(nft =>
-    nft.name.toLowerCase().includes(search.toLowerCase())
-  )
+  /* ---------------- SEARCH (FIXED) ---------------- */
+  const filteredNFTs = search.trim()
+    ? allNfts.filter(nft =>
+        nft.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : allNfts
+
+  const isSingleResult = filteredNFTs.length === 1
 
   /* ---------------- MARQUEE CONTROL ---------------- */
-  const startMarquee = (direction = "left") => {
+  const startMarquee = () => {
     marqueeControls.start({
-      x: direction === "left" ? "-100%" : "0%",
+      x: "-100%",
       transition: {
         duration: filteredNFTs.length * 6,
         ease: "linear",
@@ -98,8 +102,10 @@ export default function Market() {
   }
 
   useEffect(() => {
-    if (filteredNFTs.length > 0) {
-      startMarquee("left")
+    marqueeControls.stop()
+
+    if (!isSingleResult && filteredNFTs.length > 1) {
+      startMarquee()
     }
   }, [filteredNFTs])
 
@@ -133,26 +139,39 @@ export default function Market() {
         </span>
       </div>
 
-      {/* 🖼 NFT MARQUEE (DRAGGABLE) */}
-      <div className="relative w-full max-w-6xl overflow-hidden cursor-grab">
-        {filteredNFTs.length > 0 ? (
+      {/* 🖼 NFT DISPLAY */}
+      <div className="relative w-full max-w-6xl overflow-hidden">
+        {filteredNFTs.length === 0 && (
+          <p className="text-gray-400 text-center">No NFTs found</p>
+        )}
+
+        {/* 🔥 AUTO-FOCUS SINGLE NFT */}
+        {isSingleResult && (
           <motion.div
-            className="flex gap-6 w-max"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1.05, opacity: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="flex justify-center"
+          >
+            <div className="shadow-[0_0_50px_rgba(99,102,241,0.9)] rounded-2xl">
+              <NFTCard
+                nft={filteredNFTs[0]}
+                reload={loadMarketplaceNFTs}
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {/* 🌊 MARQUEE MULTIPLE NFTs */}
+        {!isSingleResult && filteredNFTs.length > 1 && (
+          <motion.div
+            className="flex gap-6 w-max cursor-grab"
             animate={marqueeControls}
             drag="x"
             dragConstraints={{ left: -100000, right: 100000 }}
             dragElastic={0.05}
             onHoverStart={() => marqueeControls.stop()}
-            onHoverEnd={() => startMarquee("left")}
-            onDragStart={() => marqueeControls.stop()}
-            onDragEnd={(e, info) => {
-              // 👉 determine direction from drag velocity
-              if (info.velocity.x > 0) {
-                startMarquee("right")
-              } else {
-                startMarquee("left")
-              }
-            }}
+            onHoverEnd={startMarquee}
           >
             {filteredNFTs.map(nft => (
               <div
@@ -163,8 +182,6 @@ export default function Market() {
               </div>
             ))}
           </motion.div>
-        ) : (
-          <p className="text-gray-400 text-center">No NFTs found</p>
         )}
       </div>
 
@@ -179,24 +196,42 @@ export default function Market() {
           {showHistory ? "Hide Sold History" : "Sold History"}
         </motion.button>
       </div>
+      
 
       {/* 🧾 SOLD HISTORY */}
       {showHistory && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mt-6">
-          {sales.map((s, i) => (
-            <div
-              key={i}
-              className="bg-slate-900 p-4 rounded-xl border border-slate-700"
-            >
-              <p className="text-indigo-400 font-semibold">
-                NFT #{s.tokenId}
-              </p>
-              <p>{ethers.formatEther(s.price)} ETH</p>
-              <p className="text-xs text-gray-500 mt-1">
-                {new Date(s.time * 1000).toLocaleString()}
-              </p>
-            </div>
-          ))}
+          {sales.length > 0 ? (
+            sales.map((s, i) => (
+              <div
+                key={i}
+                className="bg-slate-900 p-4 rounded-xl border border-slate-700"
+              >
+                <p className="text-indigo-400 font-semibold">
+                  NFT #{s.tokenId}
+                </p>
+
+                <p className="text-sm">
+                  {ethers.formatEther(s.price)} ETH
+                </p>
+
+                <p className="text-xs text-gray-400 mt-1">
+                  Buyer:
+                  <span className="ml-1 text-indigo-300">
+                    {s.buyer.slice(0, 6)}...{s.buyer.slice(-4)}
+                  </span>
+                </p>
+
+                <p className="text-xs text-gray-500 mt-1">
+                  {new Date(s.time * 1000).toLocaleString()}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400 col-span-full text-center">
+              No sales yet
+            </p>
+          )}
         </div>
       )}
     </motion.div>
