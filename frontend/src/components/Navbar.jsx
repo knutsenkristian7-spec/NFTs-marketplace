@@ -16,7 +16,8 @@ export default function Navbar({ account, connectWallet, disconnectWallet }) {
 
           {/* DESKTOP LINKS */}
           <div className="hidden md:flex gap-10 font-bold text-lg md:text-xl text-blue-500">
-            <Link to="/" className="hover:text-yellow-700">Market</Link>
+            <Link to="/" className="hover:text-white">Home</Link>
+            <Link to="/market" className="hover:text-yellow-700">Market</Link>
             <Link to="/create" className="hover:text-green-700">Create</Link>
             <Link to="/my-nfts" className="hover:text-red-600">My NFTs</Link>
           </div>
@@ -53,7 +54,8 @@ export default function Navbar({ account, connectWallet, disconnectWallet }) {
       {/* MOBILE MENU */}
       {open && (
         <div className="md:hidden bg-gray-900 px-6 py-6 space-y-4 text-center">
-          <Link to="/" onClick={() => setOpen(false)}>Market</Link>
+          <Link to="/" onClick={() => setOpen(false)}>Home</Link>
+          <Link to="/market" onClick={() => setOpen(false)}>Market</Link>
           <Link to="/create" onClick={() => setOpen(false)}>Create</Link>
           <Link to="/my-nfts" onClick={() => setOpen(false)}>My NFTs</Link>
 

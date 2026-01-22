@@ -2,6 +2,7 @@ import { useState } from "react"
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { ethers } from "ethers"
 import Navbar from "./components/Navbar"
+import Landing from "./pages/Landing"
 import Market from "./pages/Market"
 import Create from "./pages/Create"
 import MyNFTs from "./pages/MyNFTs"
@@ -12,14 +13,26 @@ import { AnimatePresence } from "framer-motion"
 import "./App.css"
 
 /* ---------- PAGE TRANSITIONS ---------- */
-function AnimatedRoutes() {
+function AnimatedRoutes({ account, connectWallet }) {
   const location = useLocation()
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Market />} />
-        <Route path="/create" element={<Create />} />
+        <Route
+          path="/"
+          element={
+            <Landing
+              account={account}
+              connectWallet={connectWallet}
+            />
+          }
+        />
+        <Route path="/market" element={<Market />} />
+        <Route
+          path="/create"
+          element={<Create account={account} />}
+        />
         <Route path="/my-nfts" element={<MyNFTs />} />
         <Route path="/nft/:nft/:tokenId" element={<NFTDetail />} />
       </Routes>
@@ -48,6 +61,21 @@ function App() {
   }
 
   return (
+    <BrowserRouter>
+      <AppLayout
+        account={account}
+        connectWallet={connectWallet}
+        disconnectWallet={disconnectWallet}
+      />
+    </BrowserRouter>
+  )
+}
+
+function AppLayout({ account, connectWallet, disconnectWallet }) {
+  const location = useLocation()
+  const isLanding = location.pathname === "/"
+
+  return (
     <div className="relative min-h-screen overflow-hidden">
       {/* 🔹 BLURRED BACKGROUND */}
       <div
@@ -60,20 +88,23 @@ function App() {
 
       {/* 🔹 MAIN CONTENT */}
       <div className="relative z-10 min-h-screen flex flex-col">
-        <BrowserRouter>
+        {/* ❌ HIDE NAVBAR ON LANDING */}
+        {!isLanding && (
           <Navbar
             account={account}
             connectWallet={connectWallet}
             disconnectWallet={disconnectWallet}
           />
+        )}
 
-          {/* OFFSET FOR FIXED NAVBAR */}
-          <main className="flex-1 flex pt-20">
-            <AnimatedRoutes />
-          </main>
+        <main className={`flex-1 flex ${!isLanding ? "pt-20" : ""}`}>
+          <AnimatedRoutes
+            account={account}
+            connectWallet={connectWallet}
+          />
+        </main>
 
-          <Footer />
-        </BrowserRouter>
+        {!isLanding && <Footer />}
       </div>
     </div>
   )
