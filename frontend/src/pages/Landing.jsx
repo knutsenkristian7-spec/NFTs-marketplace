@@ -85,12 +85,7 @@ export default function Landing({ account, connectWallet }) {
         </div>
 
         {/* MARKET */}
-        <button
-          onClick={() => navigate("/market")}
-          className="mt-10 text-indigo-400 underline hover:text-indigo-300"
-        >
-          Explore Market →
-        </button>
+        
       </motion.div>
     </div>
   )
