@@ -75,7 +75,7 @@ export default function Landing({ account, connectWallet }) {
               px-8 py-3 rounded-xl font-bold text-lg transition
               ${
                 account
-                  ? "border border-indigo-400 text-indigo-300 hover:bg-indigo-500 hover:text-white"
+                  ? "border border-indigo-500 text-indigo-400 hover:bg-indigo-500 hover:text-white"
                   : "border border-gray-800 text-gray-500 cursor-not-allowed"
               }
             `}
