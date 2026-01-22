@@ -76,7 +76,7 @@ export default function Landing({ account, connectWallet }) {
               ${
                 account
                   ? "border border-indigo-400 text-indigo-300 hover:bg-indigo-500 hover:text-white"
-                  : "border border-gray-700 text-gray-500 cursor-not-allowed"
+                  : "border border-gray-800 text-gray-500 cursor-not-allowed"
               }
             `}
           >
